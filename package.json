@@ -1,0 +1,10 @@
+{
+  "name": "az900-study-kit",
+  "version": "1.0.0",
+  "description": "Interactive quizzes and flashcards for the Microsoft AZ-900 Azure Fundamentals exam.",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/validate-data.js",
+    "start": "python3 -m http.server 8080"
+  }
+}

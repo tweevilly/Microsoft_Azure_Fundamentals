@@ -1,6 +1,6 @@
 # Azure Fundamentals Study Tools
 
-Interactive quizzes and flashcards for the Microsoft **AZ-900: Azure Fundamentals** exam, built while studying along with an Exam Cram video course.
+Interactive quizzes and flashcards for the Microsoft **AZ-900: Azure Fundamentals** exam, built while studying along with an [Exam Cram Video](https://youtu.be/8n-kWJetQRk?si=NYfvOsB_bRvT32iS)
 
 **Live site:** https://tweevilly.github.io/Microsoft_Azure_Fundamentals/
 

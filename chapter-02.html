@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="AZ-900 Chapter 2, Describe Azure architecture and services: 70 practice questions as a quiz or flashcards." />
+    <title>Chapter 2: Describe Azure architecture and services | Azure Fundamentals Study Tools</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html"><span class="brand-dot" aria-hidden="true"></span>Azure Fundamentals Study Tools</a>
+        <span class="header-note">AZ-900</span>
+      </div>
+    </header>
+
+    <!-- The quiz and flashcard module renders here. data-chapter picks which chapter to load. -->
+    <main id="app" class="container" data-chapter="ch02" tabindex="-1">
+      <noscript><p>This study tool needs JavaScript enabled.</p></noscript>
+    </main>
+
+    <section class="container notes" aria-labelledby="notes-heading">
+      <h2 id="notes-heading">Notes</h2>
+      <ul>
+        <li><strong>Core architecture:</strong> regions, region pairs, and availability zones provide the physical footprint. Resources are organized as management groups, then subscriptions, then resource groups, then resources, and policy and access are inherited down that tree.</li>
+        <li><strong>Compute:</strong> virtual machines (IaaS), scale sets and availability sets for resilience, containers (Container Instances, AKS), App Service for web apps, Functions for serverless code, and Azure Virtual Desktop.</li>
+        <li><strong>Networking:</strong> virtual networks and subnets, peering, VPN Gateway (encrypted, over the internet) vs ExpressRoute (private connection), Azure DNS, private endpoints, and network security groups.</li>
+        <li><strong>Storage:</strong> Blob, Files, Queue, Table, and disks. Redundancy runs LRS, ZRS, GRS, GZRS. Access tiers are hot, cool, cold, and archive. Move data with AzCopy, File Sync, Data Box, or Azure Migrate.</li>
+        <li><strong>Identity and security:</strong> Microsoft Entra ID, SSO, MFA and passwordless sign-in, Conditional Access, Azure RBAC, the Zero Trust principles, defense in depth, and Microsoft Defender for Cloud.</li>
+      </ul>
+    </section>
+
+    <footer class="site-footer container">
+      <p>
+        Unofficial study aid, not affiliated with or endorsed by Microsoft. Always check the official Microsoft Learn skills
+        outline for the current exam content.
+      </p>
+      <p><a class="link" href="https://github.com/tweevilly/Microsoft_Azure_Fundamentals">Source on GitHub</a></p>
+    </footer>
+
+    <!-- Chapter data -->
+    <script src="data/chapter-02.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

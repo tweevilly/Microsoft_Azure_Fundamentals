@@ -11,8 +11,11 @@ It is a plain static site (HTML, CSS, vanilla JS) with no build step and no depe
 | Chapter | Page | Questions |
 | ------- | ---- | --------- |
 | 1. Describe cloud computing | `chapter-01.html` | 40 (two sets of 20) |
+| 2. Describe Azure architecture and services | `chapter-02.html` | 70 (four topic sets) |
 
 Chapter 1 covers cloud models (public, private, hybrid), service types (IaaS, PaaS, SaaS, serverless), the shared responsibility model, CapEx vs OpEx, and the benefits of cloud.
+
+Chapter 2 is split into four sets: core architectural components (regions, availability zones, resource hierarchy), compute and networking services, storage services, and identity, access, and security.
 
 ## Features
 
@@ -74,10 +77,10 @@ In the repo go to **Settings → Pages**, choose **Deploy from a branch**, selec
 
 ```
 index.html                landing page: chapter list, about, GitHub link
-chapter-01.html           chapter 1 page: quiz/flashcard module + notes
+chapter-01.html, chapter-02.html   one page per chapter: quiz/flashcard module + notes
 css/styles.css            styles (light and dark mode)
 js/app.js                 menu, quiz, flashcards, progress storage, routing
-data/chapter-01.js        chapter 1 questions
+data/chapter-NN.js        questions for each chapter
 scripts/validate-data.js  data checks used by `npm test` and CI
 ```
 

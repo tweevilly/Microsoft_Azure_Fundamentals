@@ -16,6 +16,14 @@
     return a.number - b.number;
   });
   var app = document.getElementById("app");
+
+  // A chapter page (<main data-chapter="ch01">) shows just that chapter; otherwise all chapters are listed.
+  var onlyChapter = app.getAttribute("data-chapter");
+  if (onlyChapter) {
+    chapters = chapters.filter(function (c) {
+      return c.id === onlyChapter;
+    });
+  }
   var LETTERS = ["A", "B", "C", "D", "E", "F"];
 
   /* ------------------------------------------------------------------ storage */
@@ -162,7 +170,21 @@
     session = null;
     keyHandler = null;
 
-    var root = h("div", {}, h("h1", { tabindex: "-1" }, "Study Kit"), h("p", { class: "lede" }, "Quizzes and flashcards for the Microsoft AZ-900 Azure Fundamentals exam. Pick a chapter and a set below."));
+    var single = onlyChapter && chapters.length === 1 ? chapters[0] : null;
+    var root = single
+      ? h(
+          "div",
+          {},
+          h("p", {}, h("a", { class: "link", href: "index.html" }, "\u2190 All chapters")),
+          h("h1", { tabindex: "-1" }, "Chapter " + single.number + ": " + single.title),
+          h("p", { class: "lede" }, "Choose a set, then take it as a quiz or as flashcards.")
+        )
+      : h(
+          "div",
+          {},
+          h("h1", { tabindex: "-1" }, "Study Kit"),
+          h("p", { class: "lede" }, "Quizzes and flashcards for the Microsoft AZ-900 Azure Fundamentals exam. Pick a chapter and a set below.")
+        );
 
     root.append(settingsCard());
 
@@ -170,7 +192,7 @@
       root.append(h("div", { class: "card" }, "No chapter data found. Check the script tags in index.html."));
     }
     chapters.forEach(function (ch) {
-      root.append(chapterCard(ch));
+      root.append(chapterCard(ch, !!single));
     });
 
     root.append(
@@ -246,12 +268,12 @@
     );
   }
 
-  function chapterCard(ch) {
+  function chapterCard(ch, bare) {
     var p = progressFor(ch.id);
     var card = h(
       "section",
       { class: "card", "aria-label": "Chapter " + ch.number + ": " + ch.title },
-      h("div", { class: "chapter-head" }, h("span", { class: "chapter-num" }, "Chapter " + ch.number), h("h2", {}, ch.title))
+      bare ? null : h("div", { class: "chapter-head" }, h("span", { class: "chapter-num" }, "Chapter " + ch.number), h("h2", {}, ch.title))
     );
 
     ch.sets.forEach(function (s) {

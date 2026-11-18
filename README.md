@@ -1,50 +1,45 @@
-# AZ-900 Study Kit
+# Azure Fundamentals Study Tools
 
-Interactive quizzes and flashcards for the Microsoft **AZ-900: Azure Fundamentals** exam. Built to be used alongside a video course: work through a chapter, then test yourself on it.
+Interactive quizzes and flashcards for the Microsoft **AZ-900: Azure Fundamentals** exam, built while studying along with an Exam Cram video course.
 
-It is a plain static site (HTML, CSS, vanilla JS). There is no build step and no dependencies, so it runs by opening `index.html` and deploys as-is to GitHub Pages.
+**Live site:** https://tweevilly.github.io/Microsoft_Azure_Fundamentals/
 
-## What's in it
+It is a plain static site (HTML, CSS, vanilla JS) with no build step and no dependencies. A landing page lists the chapters, and each chapter has its own page with the quiz and flashcard module and short notes underneath.
 
-**Chapter 1: Describe cloud computing** (40 questions, in two sets of 20)
+## Chapters
 
-- Cloud models: public, private, hybrid
-- Service types: IaaS, PaaS, SaaS, serverless
-- Shared responsibility model
-- CapEx vs OpEx and consumption-based pricing
-- Benefits of cloud: high availability, reliability, scalability and elasticity, predictability, governance, manageability, economies of scale
+| Chapter | Page | Questions |
+| ------- | ---- | --------- |
+| 1. Describe cloud computing | `chapter-01.html` | 40 (two sets of 20) |
 
-### Quiz mode
+Chapter 1 covers cloud models (public, private, hybrid), service types (IaaS, PaaS, SaaS, serverless), the shared responsibility model, CapEx vs OpEx, and the benefits of cloud.
 
+## Features
+
+**Quiz mode**
 - One question at a time with instant feedback and an explanation for every answer
 - Optional hints on selected questions
-- Score screen with a review list of everything you missed, plus **Retry missed**
+- Score screen with a review list of everything missed, plus **Retry missed**
 - Best score per set is remembered
 
-### Flashcard mode
-
+**Flashcard mode**
 - Click or press Space to flip a card (question on the front, answer and explanation on the back)
 - Mark each card **Still learning** or **Got it**, then review only the cards you have not mastered
-- Optionally show the answer choices on the card front
 
-### Options
+**Options:** shuffle question order, shuffle answer choices (on by default), show answer choices on flashcard fronts.
 
-- Shuffle question order
-- Shuffle answer choices (on by default)
-- Show answer choices on flashcard fronts
+**Keyboard shortcuts**
 
-### Keyboard shortcuts
+| Where     | Keys                                                           |
+| --------- | -------------------------------------------------------------- |
+| Quiz      | `1`-`4` or `A`-`D` answer, `H` hint, `Enter` / `→` next        |
+| Flashcard | `Space` flip, `←` `→` navigate, `1` still learning, `2` got it |
 
-| Where     | Keys                                                                      |
-| --------- | ------------------------------------------------------------------------- |
-| Quiz      | `1`-`4` or `A`-`D` answer, `H` hint, `Enter` / `→` next                   |
-| Flashcard | `Space` flip, `←` `→` navigate, `1` still learning, `2` got it            |
-
-Progress (best scores, missed questions, known cards) is saved in your browser's `localStorage`. Nothing is sent anywhere. Use **Reset progress** on the menu to clear it.
+Progress (best scores, missed questions, known cards) is saved in the browser's `localStorage` only. Nothing is sent anywhere.
 
 ## Run it locally
 
-Open `index.html` in a browser. Or serve the folder:
+Open `index.html` in a browser, or serve the folder:
 
 ```sh
 npm start          # python3 -m http.server 8080, then visit http://localhost:8080
@@ -52,26 +47,14 @@ npm start          # python3 -m http.server 8080, then visit http://localhost:80
 
 ## Publish with GitHub Pages
 
-1. Push this repo to GitHub.
-2. In the repo, go to **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/ (root)`, and save.
-4. Your site will be live at `https://<your-username>.github.io/<repo-name>/` after a minute or so.
+In the repo go to **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/ (root)`, and save. The site is then served at `https://<username>.github.io/<repo-name>/`.
 
 ## Add a new chapter
 
-1. Copy `data/chapter-01.js` to `data/chapter-02.js`.
-2. Change the chapter `id`, `number`, `title`, `sets`, and the `questions`.
-3. Add a script tag for it in `index.html`, next to the existing one:
-
-   ```html
-   <script src="data/chapter-02.js"></script>
-   ```
-
-4. Check your data:
-
-   ```sh
-   npm test           # node scripts/validate-data.js
-   ```
+1. Copy `data/chapter-01.js` to `data/chapter-02.js` and change the chapter `id`, `number`, `title`, `sets`, and `questions`.
+2. Copy `chapter-01.html` to `chapter-02.html`. Change `data-chapter="ch01"` to the new chapter id, the `<script src="data/...">` line, the title, and the notes.
+3. Add an entry for it to the list in `index.html`.
+4. Check the data with `npm test` (runs `scripts/validate-data.js`; CI runs it on every push).
 
 ### Question format
 
@@ -87,21 +70,19 @@ npm start          # python3 -m http.server 8080, then visit http://localhost:80
 }
 ```
 
-The validator checks for duplicate ids, unknown sets, missing fields, duplicate options, and out-of-range answers. A GitHub Actions workflow runs it on every push and pull request.
-
 ## Project layout
 
 ```
-index.html              page shell, loads the chapter data and the app
-css/styles.css          styles (light and dark mode)
-js/app.js               menu, quiz, flashcards, progress storage, routing
-data/chapter-01.js      chapter 1 questions
+index.html                landing page: chapter list, about, GitHub link
+chapter-01.html           chapter 1 page: quiz/flashcard module + notes
+css/styles.css            styles (light and dark mode)
+js/app.js                 menu, quiz, flashcards, progress storage, routing
+data/chapter-01.js        chapter 1 questions
 scripts/validate-data.js  data checks used by `npm test` and CI
 ```
 
-Routes use the URL hash, so the browser back button works:
-`#/`, `#/quiz/ch01/set1`, `#/cards/ch01/all`, `#/quiz/ch01/review` (missed questions).
+Inside a chapter page, routes use the URL hash so the back button works: `#/`, `#/quiz/ch01/set1`, `#/cards/ch01/all`, `#/quiz/ch01/review` (missed questions).
 
 ## Disclaimer
 
-This is an unofficial study aid and is not affiliated with or endorsed by Microsoft. Questions are original practice material, not real exam questions. Check the official Microsoft Learn skills outline for the current exam content.
+Unofficial study aid, not affiliated with or endorsed by Microsoft. The questions are original practice material, not real exam questions. Check the official Microsoft Learn skills outline for the current exam content.

@@ -3,34 +3,50 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Interactive quizzes and flashcards for the Microsoft AZ-900 Azure Fundamentals exam." />
-    <title>AZ-900 Study Kit</title>
+    <meta name="description" content="Practice quizzes and flashcards for the Microsoft AZ-900 Azure Fundamentals exam, built while studying along with an Exam Cram video course." />
+    <title>Azure Fundamentals Study Tools</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <a class="skip-link" href="#app">Skip to content</a>
+    <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href="#/"><span class="brand-dot" aria-hidden="true"></span>AZ-900 Study Kit</a>
-        <span class="header-note">Azure Fundamentals</span>
+        <a class="brand" href="index.html"><span class="brand-dot" aria-hidden="true"></span>Azure Fundamentals Study Tools</a>
+        <span class="header-note">AZ-900</span>
       </div>
     </header>
 
-    <main id="app" class="container" tabindex="-1">
-      <noscript><p>This study kit needs JavaScript enabled.</p></noscript>
-    </main>
-
-    <footer class="site-footer container">
-      <p>
-        Unofficial study aid, not affiliated with or endorsed by Microsoft. Always check the official
-        Microsoft Learn skills outline for the current exam content.
+    <main id="main" class="container" tabindex="-1">
+      <h1>Azure Fundamentals Study Tools</h1>
+      <p class="lede">
+        Practice quizzes and flashcards for the Microsoft AZ-900 exam, built while studying along with an Exam Cram video course.
       </p>
-    </footer>
 
-    <!-- Chapter data: add one <script> per chapter file -->
-    <script src="data/chapter-01.js"></script>
+      <ul class="tool-list">
+        <li>
+          <a href="chapter-01.html">
+            <span class="tool-name">Chapter 1: Describe cloud computing</span>
+            <span class="tool-desc">
+              40 practice questions on cloud models, service types, the shared responsibility model, CapEx vs OpEx, and the
+              benefits of cloud. Take them as a quiz or flip through flashcards.
+            </span>
+          </a>
+        </li>
+      </ul>
 
-    <script src="js/app.js"></script>
+      <h2>About these tools</h2>
+      <p>Every question comes with an explanation of the right answer, and missed questions can be retried on their own.</p>
+      <p>
+        Everything runs in your browser and nothing you answer is sent anywhere. Scores and flashcard progress are saved
+        only in your browser's local storage.
+      </p>
+      <p>
+        These are study aids, not real exam questions, and they are not affiliated with or endorsed by Microsoft. Check the
+        official Microsoft Learn skills outline for the current exam content.
+      </p>
+
+      <p class="source-link"><a class="link" href="https://github.com/tweevilly/Microsoft_Azure_Fundamentals">Source on GitHub</a></p>
+    </main>
   </body>
 </html>

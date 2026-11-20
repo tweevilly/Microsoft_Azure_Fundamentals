@@ -4,6 +4,9 @@ Interactive quizzes and flashcards for the Microsoft **AZ-900: Azure Fundamental
 
 **Live site:** https://tweevilly.github.io/Microsoft_Azure_Fundamentals/
 
+**Finished with the study and practice sections?** Take the 
+  <a class="link" href="https://brandonicus-rex.github.io/az-900-study-notes/practice-exam/">Microsoft Azure Fundamentals practice exam</a> here.
+
 It is a plain static site (HTML, CSS, vanilla JS) with no build step and no dependencies. A landing page lists the chapters, and each chapter has its own page with the quiz and flashcard module and short notes underneath.
 
 ## Chapters

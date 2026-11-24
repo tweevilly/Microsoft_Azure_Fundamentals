@@ -9,6 +9,14 @@
  *   answer      index (0-based) of the correct option in `options`
  *   explanation why the answer is correct
  *   hint        optional nudge shown on request in quiz mode
+ *
+ * Two more question kinds (set `type`; omitting it means a normal single-answer question):
+ *
+ *   type: "multi"   Choose N. `options` has 4-6 strings and `answer` is an ARRAY of correct indexes,
+ *                   e.g. answer: [0, 2]. The UI says "Choose two." for you; do not put it in the prompt.
+ *   type: "yesno"   A set of statements, each answered Yes or No. There is no `options` or `answer`; use
+ *                   statements: [{ text, answer: true|false, why }]. `prompt` is the lead-in or scenario.
+ *                   `explanation` is a one-line takeaway; each statement's `why` explains its own answer.
  */
 (window.AZ900 = window.AZ900 || { chapters: [] }).chapters.push({
   id: "ch01",
@@ -17,6 +25,7 @@
   sets: [
     { id: "set1", label: "Set 1" },
     { id: "set2", label: "Set 2" },
+    { id: "exam", label: "Exam-style: Yes/No and choose-two" },
   ],
   questions: [
     // ---------------------------------------------------------------- Set 1
@@ -548,6 +557,300 @@
       answer: 1,
       explanation:
         "IaaS gives you on-demand VMs, storage, and networks, which makes it well suited for test/dev environments, lift-and-shift migrations, and backup or disaster recovery.",
+    },
+    // ---------------------------------------------------------------- Exam-style (Yes/No and choose-two)
+    {
+      id: "ch01-ex-q01",
+      set: "exam",
+      type: "yesno",
+      prompt: "Contoso runs its web application on Azure virtual machines (IaaS).",
+      statements: [
+        {
+          text: "Contoso is responsible for installing operating system updates on the virtual machines.",
+          answer: true,
+          why: "With IaaS the customer manages the guest operating system, including patching.",
+        },
+        {
+          text: "Microsoft is responsible for the physical hosts and the physical network that the virtual machines run on.",
+          answer: true,
+          why: "The physical datacenter, network, and hosts are always the cloud provider's responsibility.",
+        },
+        {
+          text: "Contoso is responsible for the physical security of the Azure datacenter.",
+          answer: false,
+          why: "Physical security of the datacenter belongs to Microsoft in every service type.",
+        },
+        {
+          text: "Contoso is responsible for protecting its own data and managing its user accounts.",
+          answer: true,
+          why: "Information and data, devices, and accounts and identities always stay with the customer.",
+        },
+      ],
+      explanation:
+        "Responsibility shifts toward Microsoft as you move from IaaS to PaaS to SaaS, but data, devices, and accounts always stay with the customer.",
+    },
+    {
+      id: "ch01-ex-q02",
+      set: "exam",
+      type: "yesno",
+      prompt: "A company is choosing a cloud model for its workloads.",
+      statements: [
+        {
+          text: "In a public cloud, the organization that uses the services owns and maintains the hardware.",
+          answer: false,
+          why: "In a public cloud the provider owns and operates the hardware, which is shared by many customers.",
+        },
+        {
+          text: "A private cloud can be hosted in an organization's own on-premises datacenter.",
+          answer: true,
+          why: "A private cloud is used by a single organization and can run in its own datacenter or be hosted by a third party.",
+        },
+        {
+          text: "A hybrid cloud combines a private cloud or on-premises datacenter with a public cloud.",
+          answer: true,
+          why: "Hybrid is defined by combining the two so workloads and data can be placed where they fit best.",
+        },
+      ],
+      explanation: "Public means provider-owned and shared, private means dedicated to one organization, and hybrid combines them.",
+    },
+    {
+      id: "ch01-ex-q03",
+      set: "exam",
+      type: "yesno",
+      prompt: "Fabrikam is moving its on-premises servers to Azure virtual machines.",
+      statements: [
+        {
+          text: "Spending on servers moves from capital expenditure (CapEx) to operational expenditure (OpEx).",
+          answer: true,
+          why: "Azure bills for what you use, so there is no large up-front hardware purchase to depreciate.",
+        },
+        {
+          text: "Fabrikam must buy enough capacity up front to cover its peak demand.",
+          answer: false,
+          why: "In the consumption-based model you add or remove capacity as needed and pay for what you use.",
+        },
+        {
+          text: "A virtual machine that has been deallocated continues to incur compute charges.",
+          answer: false,
+          why: "Deallocating releases the compute resources and stops compute billing. Attached disks still incur storage charges.",
+        },
+      ],
+      explanation: "The consumption-based model replaces up-front capital spending with pay-as-you-go operating costs.",
+    },
+    {
+      id: "ch01-ex-q04",
+      set: "exam",
+      type: "yesno",
+      prompt: "A retail site must handle spikes in holiday traffic.",
+      statements: [
+        {
+          text: "Scaling up (vertical scaling) increases the CPU or memory of an existing virtual machine.",
+          answer: true,
+          why: "Vertical scaling makes a single instance bigger.",
+        },
+        {
+          text: "Scaling out (horizontal scaling) adds more instances of a resource, such as more virtual machines.",
+          answer: true,
+          why: "Horizontal scaling spreads the load across additional instances.",
+        },
+        {
+          text: "Scaling out means moving a workload to a larger virtual machine size.",
+          answer: false,
+          why: "Moving to a larger size is scaling up. Scaling out adds instances.",
+        },
+        {
+          text: "Autoscaling can add and remove instances automatically based on demand.",
+          answer: true,
+          why: "Autoscale rules react to metrics or schedules so capacity follows demand without manual changes.",
+        },
+      ],
+      explanation: "Up and down change the size of one instance. Out and in change the number of instances.",
+    },
+    {
+      id: "ch01-ex-q05",
+      set: "exam",
+      type: "yesno",
+      prompt: "A developer builds an order-processing function that runs when a message arrives in a queue.",
+      statements: [
+        {
+          text: "Servers still exist in a serverless model, but the provider provisions and manages them.",
+          answer: true,
+          why: "Serverless hides server management from you. It does not remove servers.",
+        },
+        {
+          text: "The developer must provision and patch the underlying virtual machines.",
+          answer: false,
+          why: "In serverless compute the provider manages the infrastructure, including patching.",
+        },
+        {
+          text: "Azure Functions is an example of a serverless compute service.",
+          answer: true,
+          why: "Azure Functions runs event-triggered code without you managing servers.",
+        },
+      ],
+      explanation: "Serverless means you run code in response to events and let the provider handle the infrastructure.",
+    },
+    {
+      id: "ch01-ex-q06",
+      set: "exam",
+      type: "yesno",
+      prompt: "A company is classifying the services it uses by cloud service type.",
+      statements: [
+        {
+          text: "Using Exchange Online for company email is an example of software as a service (SaaS).",
+          answer: true,
+          why: "Exchange Online is a finished application delivered over the internet and managed by Microsoft.",
+        },
+        {
+          text: "Azure App Service is an example of infrastructure as a service (IaaS).",
+          answer: false,
+          why: "App Service is platform as a service (PaaS). You deploy code and Azure manages the operating system.",
+        },
+        {
+          text: "With IaaS, the customer is responsible for managing the operating system.",
+          answer: true,
+          why: "IaaS gives you the virtualized hardware. Everything from the guest OS up is yours to manage.",
+        },
+        {
+          text: "With PaaS, the customer manages the applications and data but not the underlying operating system.",
+          answer: true,
+          why: "PaaS removes OS and runtime management so you focus on the app and its data.",
+        },
+      ],
+      explanation: "IaaS gives the most control, PaaS manages the platform for you, and SaaS delivers a ready-to-use application.",
+    },
+    {
+      id: "ch01-ex-q07",
+      set: "exam",
+      type: "yesno",
+      prompt: "A team is evaluating the reliability and predictability benefits of the cloud.",
+      statements: [
+        {
+          text: "Reliability is the ability of a system to recover from failures and continue to function.",
+          answer: true,
+          why: "That is the definition of reliability. In the cloud it is improved by distributing resources across datacenters and regions.",
+        },
+        {
+          text: "Autoscaling and load balancing help provide performance predictability.",
+          answer: true,
+          why: "They keep response times steady as demand changes.",
+        },
+        {
+          text: "Reliability is best achieved by deploying all resources in a single datacenter.",
+          answer: false,
+          why: "A single datacenter is a single point of failure. Spreading resources across zones and regions improves reliability.",
+        },
+      ],
+      explanation: "Reliability comes from redundancy, and performance predictability comes from scaling and load balancing.",
+    },
+    {
+      id: "ch01-ex-q08",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements describe the consumption-based model?",
+      options: [
+        "You pay only for the resources you consume, billed according to usage.",
+        "You do not make an up-front purchase of hardware to get started.",
+        "You commit to a fixed monthly capacity whether or not you use it.",
+        "You must size your capacity for peak demand and pay for it all year.",
+      ],
+      answer: [0, 1],
+      explanation:
+        "Consumption-based pricing means no up-front infrastructure cost, no fixed capacity commitment, and billing that follows usage.",
+    },
+    {
+      id: "ch01-ex-q09",
+      set: "exam",
+      type: "multi",
+      prompt:
+        "Which two responsibilities always stay with the customer, whether the workload runs on-premises or uses IaaS, PaaS, or SaaS?",
+      options: [
+        "Information and data",
+        "The physical network",
+        "Accounts and identities",
+        "The physical hosts",
+        "The operating system in a SaaS solution",
+      ],
+      answer: [0, 2],
+      explanation:
+        "Information and data, devices, and accounts and identities are always the customer's responsibility. The physical network and hosts always belong to the provider, and the OS in SaaS is the provider's too.",
+    },
+    {
+      id: "ch01-ex-q10",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two scenarios are the best fit for a hybrid cloud?",
+      options: [
+        "A startup with no existing infrastructure wants to avoid owning any hardware.",
+        "A bank keeps regulated customer records in its own datacenter and hosts its public website in Azure.",
+        "A developer wants a short-lived test site with no connection to any other system.",
+        "A retailer runs its inventory system on-premises and adds Azure capacity for seasonal peaks.",
+      ],
+      answer: [1, 3],
+      explanation:
+        "Hybrid fits organizations that must keep some workloads or data on-premises while using the public cloud for others or for extra capacity. The startup is a pure public cloud case.",
+    },
+    {
+      id: "ch01-ex-q11",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two scenarios are best suited to platform as a service (PaaS)?",
+      options: [
+        "Running a legacy application that needs custom operating system drivers",
+        "Providing employees with a hosted email and calendar service",
+        "Hosting a web API without patching or managing the operating system",
+        "Migrating a server unchanged by lifting and shifting it",
+        "Building an app on a managed database service that the provider maintains",
+      ],
+      answer: [2, 4],
+      explanation:
+        "PaaS lets developers run apps and use managed services without managing the OS. Custom drivers and lift-and-shift need IaaS, and hosted email is SaaS.",
+    },
+    {
+      id: "ch01-ex-q12",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two are examples of manageability in the cloud?",
+      options: [
+        "Replicating data to a second region to survive a regional outage",
+        "Deploying identical environments repeatedly from templates",
+        "Purchasing and racking additional servers in a datacenter",
+        "Managing resources through a web portal, command-line tools, or APIs",
+        "Obtaining a compliance certification for the datacenter",
+      ],
+      answer: [1, 3],
+      explanation:
+        "Manageability covers deploying and managing resources with templates, portals, command-line tools, and APIs. Replication supports reliability and certifications support governance.",
+    },
+    {
+      id: "ch01-ex-q13",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements about high availability and scalability in the cloud are true?",
+      options: [
+        "Horizontal scaling adds more instances to share the load.",
+        "Vertical scaling adds more instances behind a load balancer.",
+        "High availability guarantees that no data can ever be lost.",
+        "Autoscaling can adjust capacity automatically as demand changes.",
+      ],
+      answer: [0, 3],
+      explanation:
+        "Horizontal scaling adds instances and autoscaling adjusts capacity automatically. Vertical scaling makes one instance larger, and high availability is about uptime, not a guarantee against data loss.",
+    },
+    {
+      id: "ch01-ex-q14",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements about CapEx and OpEx are true?",
+      options: [
+        "OpEx requires purchasing servers before you can use them.",
+        "CapEx is billed monthly based on how much you use.",
+        "CapEx is up-front spending on physical infrastructure that is depreciated over time.",
+        "Cloud services such as Azure virtual machines are typically billed as OpEx.",
+      ],
+      answer: [2, 3],
+      explanation:
+        "CapEx is up-front spending on physical assets. OpEx is spending on services as you use them, which is how cloud services are billed.",
     },
   ],
 });

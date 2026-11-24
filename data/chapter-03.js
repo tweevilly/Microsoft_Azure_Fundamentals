@@ -12,6 +12,7 @@
     { id: "governance", label: "Governance and compliance" },
     { id: "deploy", label: "Managing and deploying resources" },
     { id: "monitor", label: "Monitoring tools" },
+    { id: "exam", label: "Exam-style: Yes/No and choose-two" },
   ],
   questions: [
     // ------------------------------------------------ Cost management (15)
@@ -812,6 +813,437 @@
       answer: 0,
       explanation:
         "Dashboards and Azure Monitor workbooks combine charts and queries into views you can customize and share with your team.",
+    },
+    // ---------------------------------------------------------------- Exam-style (Yes/No and choose-two)
+    {
+      id: "ch03-ex-q01",
+      set: "exam",
+      type: "yesno",
+      prompt: "A company is estimating the cost of running workloads in Azure.",
+      statements: [
+        {
+          text: "Inbound data transfer into Azure datacenters is generally free of charge.",
+          answer: true,
+          why: "Azure does not charge for data coming in. Charges apply mainly to data leaving Azure.",
+        },
+        {
+          text: "Data transferred out of Azure to the internet is never charged.",
+          answer: false,
+          why: "Outbound transfer is billed once it exceeds the free allowance.",
+        },
+        {
+          text: "Azure Reservations offer a discount in exchange for a one-year or three-year commitment.",
+          answer: true,
+          why: "Reserving capacity for one or three years lowers the price compared with pay-as-you-go.",
+        },
+        {
+          text: "A virtual machine of a given size costs the same in every Azure region.",
+          answer: false,
+          why: "Geography affects price because local costs such as power, labor, and taxes differ.",
+        },
+      ],
+      explanation: "Resource type, size, region, and commitment all affect cost, and outbound data transfer is billed.",
+    },
+    {
+      id: "ch03-ex-q02",
+      set: "exam",
+      type: "yesno",
+      prompt: "A team is using the Azure pricing calculator and Microsoft Cost Management.",
+      statements: [
+        {
+          text: "The pricing calculator can estimate the cost of Azure services before you deploy them.",
+          answer: true,
+          why: "You configure services and sizes in the calculator to produce an estimate in advance.",
+        },
+        {
+          text: "The pricing calculator shows the actual charges that your running resources have accumulated.",
+          answer: false,
+          why: "Actual spending is shown in Microsoft Cost Management, not in the pricing calculator.",
+        },
+        {
+          text: "Estimates from the pricing calculator are guaranteed to match your final bill.",
+          answer: false,
+          why: "It is an estimate. Your bill depends on actual usage.",
+        },
+      ],
+      explanation: "Use the pricing calculator to estimate before you deploy and Cost Management to track what you actually spend.",
+    },
+    {
+      id: "ch03-ex-q03",
+      set: "exam",
+      type: "yesno",
+      prompt: "A finance team is using Microsoft Cost Management to control spending on a subscription.",
+      statements: [
+        {
+          text: "A budget can send an alert when spending reaches a threshold that you define.",
+          answer: true,
+          why: "Budgets notify you as actual or forecasted spending crosses the thresholds you set.",
+        },
+        {
+          text: "A budget automatically stops resources when the budget amount is exceeded.",
+          answer: false,
+          why: "By default a budget only alerts. Stopping resources needs automation that you configure separately.",
+        },
+        {
+          text: "Cost analysis lets you view accumulated costs and filter them by resource group or tag.",
+          answer: true,
+          why: "Cost analysis breaks down spending by dimensions such as resource group, tag, and service.",
+        },
+      ],
+      explanation: "Budgets alert, cost analysis explores spending, and neither one stops resources on its own.",
+    },
+    {
+      id: "ch03-ex-q04",
+      set: "exam",
+      type: "yesno",
+      prompt: "An administrator is applying tags to Azure resources.",
+      statements: [
+        {
+          text: "A tag is a name and value pair that you apply to a resource.",
+          answer: true,
+          why: "Tags are metadata made of a name and a value, such as Department and Finance.",
+        },
+        {
+          text: "Resources automatically inherit the tags of their resource group.",
+          answer: false,
+          why: "Tags are not inherited by default. You must apply them to each resource, for example with Azure Policy.",
+        },
+        {
+          text: "Tags can be used to group costs by department in cost analysis.",
+          answer: true,
+          why: "Tagged resources can be filtered and grouped in cost reports.",
+        },
+      ],
+      explanation: "Tags organize resources and costs, but they are not inherited unless you enforce it.",
+    },
+    {
+      id: "ch03-ex-q05",
+      set: "exam",
+      type: "yesno",
+      prompt: "A company is using Azure Policy and resource locks to govern a subscription.",
+      statements: [
+        {
+          text: "Azure Policy can deny the deployment of a resource that does not comply with a rule.",
+          answer: true,
+          why: "A policy with the deny effect blocks noncompliant resources when they are created or updated.",
+        },
+        {
+          text: "A resource lock applies even to users who have the Owner role.",
+          answer: true,
+          why: "Locks override permissions. An Owner must remove the lock before changing or deleting the resource.",
+        },
+        {
+          text: "A ReadOnly lock lets users delete the resource but not modify it.",
+          answer: false,
+          why: "A ReadOnly lock blocks both modification and deletion.",
+        },
+        {
+          text: "A CanNotDelete lock lets authorized users read and modify a resource but not delete it.",
+          answer: true,
+          why: "CanNotDelete prevents only deletion.",
+        },
+      ],
+      explanation: "Policy enforces rules on resource configuration, and locks protect resources from deletion or change regardless of role.",
+    },
+    {
+      id: "ch03-ex-q06",
+      set: "exam",
+      type: "yesno",
+      prompt: "A compliance officer is evaluating Microsoft Purview.",
+      statements: [
+        {
+          text: "Microsoft Purview helps govern and manage data across on-premises, multicloud, and SaaS sources.",
+          answer: true,
+          why: "Purview is a unified data governance service covering many kinds of data sources.",
+        },
+        {
+          text: "Microsoft Purview can discover and classify sensitive data.",
+          answer: true,
+          why: "Classification of sensitive data is a core Purview capability and supports compliance.",
+        },
+        {
+          text: "Microsoft Purview is the service used to assign Azure RBAC roles.",
+          answer: false,
+          why: "Role assignments are made with Azure role-based access control, not Purview.",
+        },
+      ],
+      explanation: "Purview is for data governance and compliance. Access to Azure resources is controlled with RBAC.",
+    },
+    {
+      id: "ch03-ex-q07",
+      set: "exam",
+      type: "yesno",
+      prompt: "A DevOps engineer is deploying resources with Azure Resource Manager (ARM) templates.",
+      statements: [
+        {
+          text: "Requests to create Azure resources go through Azure Resource Manager whether they come from the portal, the CLI, or an SDK.",
+          answer: true,
+          why: "Resource Manager is the single management layer for Azure, so every tool uses the same API.",
+        },
+        {
+          text: "ARM templates are declarative, so you describe the desired end state of the resources.",
+          answer: true,
+          why: "A template states what you want, and Resource Manager works out how to deploy it.",
+        },
+        {
+          text: "ARM templates are imperative scripts that run commands in the order you write them.",
+          answer: false,
+          why: "That describes a script. Templates declare the end state instead of listing steps.",
+        },
+      ],
+      explanation: "ARM templates are declarative infrastructure as code that is deployed through Azure Resource Manager.",
+    },
+    {
+      id: "ch03-ex-q08",
+      set: "exam",
+      type: "yesno",
+      prompt: "An administrator is choosing tools to manage Azure resources from the command line.",
+      statements: [
+        {
+          text: "Azure Cloud Shell is a browser-accessible shell that supports both Bash and PowerShell.",
+          answer: true,
+          why: "Cloud Shell runs in the browser, and you choose the Bash or PowerShell experience.",
+        },
+        {
+          text: "Azure CLI commands start with the az prefix.",
+          answer: true,
+          why: "Azure CLI commands use the form az <group> <command>, such as az group create.",
+        },
+        {
+          text: "Azure PowerShell can run only on Windows computers.",
+          answer: false,
+          why: "Azure PowerShell is cross-platform and runs on Windows, macOS, and Linux.",
+        },
+      ],
+      explanation: "Azure CLI and Azure PowerShell both run on all major platforms, and Cloud Shell offers them in a browser.",
+    },
+    {
+      id: "ch03-ex-q09",
+      set: "exam",
+      type: "yesno",
+      prompt: "A company has servers in its own datacenter and in another cloud provider and wants to manage them from Azure.",
+      statements: [
+        {
+          text: "Azure Arc can manage on-premises servers by representing them as resources in Azure.",
+          answer: true,
+          why: "Arc projects servers outside Azure into Azure Resource Manager so you can manage them like Azure resources.",
+        },
+        {
+          text: "Azure Arc can manage resources that run in other cloud providers.",
+          answer: true,
+          why: "Arc extends Azure management to resources in other clouds as well as on-premises.",
+        },
+        {
+          text: "Azure Arc requires the servers to be migrated into an Azure datacenter.",
+          answer: false,
+          why: "Arc manages resources where they are. No migration is needed.",
+        },
+      ],
+      explanation: "Azure Arc brings Azure management to resources that run outside Azure without moving them.",
+    },
+    {
+      id: "ch03-ex-q10",
+      set: "exam",
+      type: "yesno",
+      prompt: "An operations team is choosing between Azure monitoring tools.",
+      statements: [
+        {
+          text: "Azure Service Health sends personalized alerts about service issues and planned maintenance that affect your resources.",
+          answer: true,
+          why: "Service Health filters Azure-wide events down to the services and regions you use.",
+        },
+        {
+          text: "Azure Advisor gives recommendations in categories that include reliability, security, performance, cost, and operational excellence.",
+          answer: true,
+          why: "Those are the five categories of Advisor recommendations.",
+        },
+        {
+          text: "Application Insights monitors only the hardware metrics of virtual machines.",
+          answer: false,
+          why: "Application Insights monitors the performance and usage of applications, such as response times, failures, and user behavior.",
+        },
+      ],
+      explanation: "Service Health tracks Azure events, Advisor recommends improvements, and Application Insights monitors applications.",
+    },
+    {
+      id: "ch03-ex-q11",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two actions can reduce the cost of running Azure virtual machines?",
+      options: [
+        "Purchasing Azure Reservations for a one-year or three-year term",
+        "Adding tags to the virtual machines",
+        "Increasing the number of resource groups",
+        "Applying Azure Hybrid Benefit with existing Windows Server licenses that include Software Assurance",
+      ],
+      answer: [0, 3],
+      explanation:
+        "Reservations and Azure Hybrid Benefit both lower the price of VMs. Tags and resource groups organize resources but do not change what they cost.",
+    },
+    {
+      id: "ch03-ex-q12",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two factors can affect the cost of an Azure virtual machine?",
+      options: [
+        "The name of the resource group",
+        "The size of the virtual machine",
+        "The tags applied to the virtual machine",
+        "The operating system that runs on it, such as Windows or Linux",
+      ],
+      answer: [1, 3],
+      explanation:
+        "VM size, region, and operating system licensing all affect the price. Names and tags are metadata and have no effect on cost.",
+    },
+    {
+      id: "ch03-ex-q13",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements about Azure Policy are true?",
+      options: [
+        "A policy assignment can be scoped to a management group, a subscription, or a resource group.",
+        "Azure Policy controls which users are allowed to create resources.",
+        "A policy can only audit resources and cannot deny deployments.",
+        "An initiative groups multiple policy definitions so that they can be assigned together.",
+      ],
+      answer: [0, 3],
+      explanation:
+        "Policy assignments apply at a scope, and initiatives bundle definitions. Controlling who can act is Azure RBAC, and policies can deny as well as audit.",
+    },
+    {
+      id: "ch03-ex-q14",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements about resource locks are true?",
+      options: [
+        "The lock types are CanNotDelete and ReadOnly.",
+        "Locks apply only to users who do not have the Owner role.",
+        "A lock applied to a resource group is inherited by the resources in it.",
+        "Locks can be created only at the subscription level.",
+      ],
+      answer: [0, 2],
+      explanation:
+        "Locks come in two types and are inherited by child resources. They can be set on a subscription, resource group, or resource, and they apply to every role.",
+    },
+    {
+      id: "ch03-ex-q15",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two capabilities does Microsoft Purview provide?",
+      options: [
+        "Deploying virtual machines from templates",
+        "Creating a map of data across on-premises, multicloud, and SaaS sources",
+        "Enforcing tag naming standards on resource groups",
+        "Governing data and supporting compliance, for example by classifying sensitive data",
+      ],
+      answer: [1, 3],
+      explanation:
+        "Purview maps and classifies data to support governance and compliance. Templates belong to Azure Resource Manager and tag standards to Azure Policy.",
+    },
+    {
+      id: "ch03-ex-q16",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements about the Azure portal are true?",
+      options: [
+        "It is a web-based interface for building, managing, and monitoring Azure resources.",
+        "It requires you to install client software on your computer.",
+        "It lets you build customizable dashboards.",
+        "It cannot be used to deploy resources.",
+      ],
+      answer: [0, 2],
+      explanation:
+        "The portal runs in a browser, can deploy and manage resources, and supports customizable dashboards. No local installation is needed.",
+    },
+    {
+      id: "ch03-ex-q17",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two are benefits of infrastructure as code (IaC)?",
+      options: [
+        "Environments are configured by hand for maximum flexibility.",
+        "Deployments are consistent and repeatable.",
+        "Changes must be applied one at a time through the portal.",
+        "Configuration can be stored in source control and versioned.",
+      ],
+      answer: [1, 3],
+      explanation:
+        "IaC replaces manual configuration with code that produces repeatable deployments and can be tracked in source control.",
+    },
+    {
+      id: "ch03-ex-q18",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two statements about Azure Cloud Shell are true?",
+      options: [
+        "It supports both Bash and PowerShell experiences.",
+        "It requires you to install Azure CLI on your computer first.",
+        "It runs only on Windows computers.",
+        "It can be opened from the Azure portal or from shell.azure.com.",
+      ],
+      answer: [0, 3],
+      explanation:
+        "Cloud Shell is a browser-based shell with Bash and PowerShell. It needs no local installation and works from any platform with a browser.",
+    },
+    {
+      id: "ch03-ex-q19",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two are categories of Azure Advisor recommendations?",
+      options: ["Governance", "Reliability", "Identity", "Operational excellence"],
+      answer: [1, 3],
+      explanation:
+        "Advisor categories are reliability, security, performance, cost, and operational excellence. Governance and identity are not categories.",
+    },
+    {
+      id: "ch03-ex-q20",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two capabilities does Azure Monitor provide?",
+      options: [
+        "Creating budgets that alert you when spending reaches a threshold",
+        "Querying collected logs by using Kusto Query Language (KQL) in Log Analytics",
+        "Notifying people or running automation when a metric crosses a threshold by using alerts and action groups",
+        "Preventing noncompliant resources from being deployed",
+      ],
+      answer: [1, 2],
+      explanation:
+        "Azure Monitor collects telemetry, lets you query logs in Log Analytics, and sends alerts. Budgets belong to Cost Management and blocking deployments to Azure Policy.",
+    },
+    {
+      id: "ch03-ex-q21",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two types of events does Azure Service Health track?",
+      options: ["Service issues", "Budget overruns", "Planned maintenance", "Policy noncompliance"],
+      answer: [0, 2],
+      explanation:
+        "Service Health reports service issues, planned maintenance, health advisories, and security advisories that affect your resources.",
+    },
+    {
+      id: "ch03-ex-q22",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two things can Azure Monitor Application Insights monitor?",
+      options: [
+        "The request rates, response times, and failure rates of a web application",
+        "The physical hardware health of Azure datacenters",
+        "The replication health of domain controllers",
+        "How users interact with an app, such as which pages they visit",
+      ],
+      answer: [0, 3],
+      explanation:
+        "Application Insights tracks application performance and user behavior. Datacenter hardware is Microsoft's responsibility, and domain controller replication is not an Application Insights signal.",
+    },
+    {
+      id: "ch03-ex-q23",
+      set: "exam",
+      type: "multi",
+      prompt: "Which two tools can be installed on a local Windows, macOS, or Linux computer to manage Azure resources?",
+      options: ["Azure PowerShell", "The Azure portal", "Azure CLI", "Azure Cloud Shell"],
+      answer: [0, 2],
+      explanation:
+        "Azure CLI and Azure PowerShell are installed locally. The portal and Cloud Shell run in a browser.",
     },
   ],
 });

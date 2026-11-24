@@ -13,9 +13,9 @@ It is a plain static site (HTML, CSS, vanilla JS) with no build step and no depe
 
 | Chapter | Page | Questions |
 | ------- | ---- | --------- |
-| 1. Describe cloud computing | `chapter-01.html` | 40 (two sets of 20) |
-| 2. Describe Azure architecture and services | `chapter-02.html` | 70 (four topic sets) |
-| 3. Describe Azure management and governance | `chapter-03.html` | 60 (four topic sets of 15) |
+| 1. Describe cloud computing | `chapter-01.html` | 54 (two sets of 20, plus 14 exam-style) |
+| 2. Describe Azure architecture and services | `chapter-02.html` | 96 (four topic sets, plus 26 exam-style) |
+| 3. Describe Azure management and governance | `chapter-03.html` | 83 (four topic sets of 15, plus 23 exam-style) |
 
 Chapter 1 covers cloud models (public, private, hybrid), service types (IaaS, PaaS, SaaS, serverless), the shared responsibility model, CapEx vs OpEx, and the benefits of cloud.
 
@@ -27,6 +27,7 @@ Chapter 3 is split into four sets: cost management, governance and compliance, m
 
 **Quiz mode**
 - One question at a time with instant feedback and an explanation for every answer
+- Three question types: single answer, choose-two (multi-select), and Yes/No statement sets
 - Optional hints on selected questions
 - Score screen with a review list of everything missed, plus **Retry missed**
 - Best score per set is remembered

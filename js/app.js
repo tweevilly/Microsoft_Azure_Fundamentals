@@ -116,6 +116,48 @@
     return n + " " + word + (n === 1 ? "" : "s");
   }
 
+  // Question kinds: "single" (default), "multi" (choose N; answer is an array) and
+  // "yesno" (a set of statements, each answered Yes or No).
+  function kindOf(q) {
+    return q.type === "multi" || q.type === "yesno" ? q.type : "single";
+  }
+
+  function numberWord(n) {
+    return ["zero", "one", "two", "three", "four", "five", "six"][n] || String(n);
+  }
+
+  // The correct answer as a list of text lines (used on the results page and on flashcard backs).
+  function correctLines(q) {
+    var kind = kindOf(q);
+    if (kind === "multi") {
+      return q.answer.map(function (i) {
+        return q.options[i];
+      });
+    }
+    if (kind === "yesno") {
+      return q.statements.map(function (st) {
+        return (st.answer ? "Yes: " : "No: ") + st.text;
+      });
+    }
+    return [q.options[q.answer]];
+  }
+
+  function answerBlock(label, cls, lines) {
+    if (lines.length === 1) return h("p", {}, h("span", { class: cls }, label), lines[0]);
+    return h(
+      "div",
+      {},
+      h("p", {}, h("span", { class: cls }, label)),
+      h(
+        "ul",
+        { class: "answer-lines" },
+        lines.map(function (l) {
+          return h("li", {}, l);
+        })
+      )
+    );
+  }
+
   function getPool(ch, scope, mode) {
     var p = progressFor(ch.id);
     if (scope === "all") return ch.questions.slice();
@@ -313,8 +355,9 @@
       index: 0,
       correct: 0,
       items: pool.map(function (q) {
-        var order = range(q.options.length);
-        return { q: q, order: store.settings.shuffleAnswers ? shuffle(order) : order, picked: null };
+        // Statement sets keep their a, b, c order because statements can refer to each other.
+        var order = range(kindOf(q) === "yesno" ? 0 : q.options.length);
+        return { q: q, order: store.settings.shuffleAnswers ? shuffle(order) : order, done: false, ok: false, yours: [] };
       }),
     };
     renderQuiz();
@@ -325,27 +368,76 @@
     var s = session;
     var item = s.items[s.index];
     var q = item.q;
+    var kind = kindOf(q);
     var total = s.items.length;
+    var need = kind === "multi" ? q.answer.length : 0;
 
     var heading = h("h2", { class: "question", tabindex: "-1" }, q.prompt);
+    var instruction =
+      kind === "multi"
+        ? h("p", { class: "q-instruction" }, "Choose " + numberWord(need) + ".")
+        : kind === "yesno"
+        ? h("p", { class: "q-instruction" }, "For each statement, select Yes if the statement is true. Otherwise, select No.")
+        : null;
     var bar = h("div", { class: "progress-bar", style: "width:" + (s.index / total) * 100 + "%" });
     var scoreEl = h("span", {}, s.correct + " correct");
 
-    var optionButtons = item.order.map(function (origIdx, pos) {
-      return h(
-        "button",
-        {
-          type: "button",
-          class: "option",
-          onclick: function () {
-            pick(pos);
+    var selected = []; // multi: selected[pos] is true when that displayed option is ticked
+    var answers = []; // yesno: answers[i] is true (Yes), false (No) or null (unanswered)
+    var optionButtons = [];
+    var rows = [];
+    var yesButtons = [];
+    var noButtons = [];
+    var countEl = null;
+    var checkBtn = null;
+
+    var optionsBox;
+    if (kind === "yesno") {
+      q.statements.forEach(function (st, i) {
+        answers.push(null);
+        var yes = h("button", { type: "button", class: "yn-btn", "aria-pressed": "false", onclick: function () { setAnswer(i, true); } }, "Yes");
+        var no = h("button", { type: "button", class: "yn-btn", "aria-pressed": "false", onclick: function () { setAnswer(i, false); } }, "No");
+        yesButtons.push(yes);
+        noButtons.push(no);
+        rows.push(
+          h(
+            "div",
+            { class: "stmt", role: "group", "aria-label": "Statement " + LETTERS[i] },
+            h("span", { class: "option-letter", "aria-hidden": "true" }, LETTERS[i]),
+            h("span", { class: "stmt-text" }, st.text),
+            h("div", { class: "yn" }, yes, no),
+            h("span", { class: "option-mark", "aria-hidden": "true" })
+          )
+        );
+      });
+      optionsBox = h("div", { class: "options statements" }, rows);
+    } else {
+      optionButtons = item.order.map(function (origIdx, pos) {
+        selected.push(false);
+        return h(
+          "button",
+          {
+            type: "button",
+            class: "option",
+            "aria-pressed": kind === "multi" ? "false" : false,
+            onclick: function () {
+              if (kind === "multi") toggleOption(pos);
+              else pick(pos);
+            },
           },
-        },
-        h("span", { class: "option-letter", "aria-hidden": "true" }, LETTERS[pos]),
-        h("span", { class: "option-text" }, q.options[origIdx]),
-        h("span", { class: "option-mark", "aria-hidden": "true" })
-      );
-    });
+          h("span", { class: "option-letter", "aria-hidden": "true" }, LETTERS[pos]),
+          h("span", { class: "option-text" }, q.options[origIdx]),
+          h("span", { class: "option-mark", "aria-hidden": "true" })
+        );
+      });
+      optionsBox = h("div", { class: "options" }, optionButtons);
+    }
+
+    if (kind !== "single") {
+      countEl = h("span", { class: "muted sel-count" });
+      checkBtn = h("button", { type: "button", class: "btn btn-primary", disabled: true, onclick: submit }, "Check answer");
+      updateCheck();
+    }
 
     var feedback = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
     var hintBox = q.hint ? h("p", { class: "hint", hidden: true }, "Hint: " + q.hint) : null;
@@ -362,20 +454,72 @@
     );
 
     function toggleHint() {
-      if (!hintBox || item.picked !== null) return;
+      if (!hintBox || item.done) return;
       hintBox.hidden = !hintBox.hidden;
     }
 
-    function pick(pos) {
-      if (item.picked !== null) return;
-      item.picked = pos;
-      var ok = item.order[pos] === q.answer;
+    function selectedCount() {
+      return selected.filter(Boolean).length;
+    }
+
+    function ready() {
+      if (kind === "multi") return selectedCount() === need;
+      if (kind === "yesno") return answers.every(function (a) { return a !== null; });
+      return false;
+    }
+
+    function updateCheck() {
+      if (kind === "multi") countEl.textContent = selectedCount() + " of " + need + " selected";
+      else countEl.textContent = answers.filter(function (a) { return a !== null; }).length + " of " + answers.length + " answered";
+      checkBtn.disabled = !ready();
+    }
+
+    function toggleOption(pos) {
+      if (item.done) return;
+      selected[pos] = !selected[pos];
+      optionButtons[pos].classList.toggle("selected", selected[pos]);
+      optionButtons[pos].setAttribute("aria-pressed", String(selected[pos]));
+      updateCheck();
+    }
+
+    function setAnswer(i, value) {
+      if (item.done) return;
+      answers[i] = value;
+      yesButtons[i].classList.toggle("selected", value === true);
+      noButtons[i].classList.toggle("selected", value === false);
+      yesButtons[i].setAttribute("aria-pressed", String(value === true));
+      noButtons[i].setAttribute("aria-pressed", String(value === false));
+      updateCheck();
+    }
+
+    // Records the result and reveals the explanation; shared by all question kinds.
+    function finish(ok, yours, feedbackNodes) {
+      item.done = true;
+      item.ok = ok;
+      item.yours = yours;
       if (ok) s.correct++;
       var p = progressFor(s.ch.id);
       if (ok) delete p.missed[q.id];
       else p.missed[q.id] = true;
       saveStore();
 
+      feedback.className = "feedback " + (ok ? "ok" : "bad");
+      feedback.replaceChildren.apply(feedback, feedbackNodes.filter(Boolean));
+
+      scoreEl.textContent = s.correct + " correct";
+      bar.style.width = ((s.index + 1) / total) * 100 + "%";
+      if (hintBtn) hintBtn.disabled = true;
+      if (checkBtn) {
+        checkBtn.hidden = true;
+        countEl.hidden = true;
+      }
+      nextBtn.hidden = false;
+      nextBtn.focus();
+    }
+
+    function pick(pos) {
+      if (item.done) return;
+      var ok = item.order[pos] === q.answer;
       optionButtons.forEach(function (btn, i) {
         var isCorrect = item.order[i] === q.answer;
         btn.classList.toggle("correct", isCorrect);
@@ -384,24 +528,69 @@
         btn.setAttribute("aria-disabled", "true");
         btn.querySelector(".option-mark").textContent = isCorrect ? "✓" : i === pos ? "✗" : "";
       });
-
       var correctPos = item.order.indexOf(q.answer);
-      feedback.className = "feedback " + (ok ? "ok" : "bad");
-      feedback.replaceChildren(
+      finish(ok, [q.options[item.order[pos]]], [
         h("strong", {}, ok ? "Correct." : "Not quite."),
         ok ? null : " The correct answer is " + LETTERS[correctPos] + ": " + q.options[q.answer] + ".",
-        h("p", { class: "explanation" }, q.explanation)
-      );
+        h("p", { class: "explanation" }, q.explanation),
+      ]);
+    }
 
-      scoreEl.textContent = s.correct + " correct";
-      bar.style.width = ((s.index + 1) / total) * 100 + "%";
-      if (hintBtn) hintBtn.disabled = true;
-      nextBtn.hidden = false;
-      nextBtn.focus();
+    function submitMulti() {
+      var ok = true;
+      var yours = [];
+      var correctLetters = [];
+      optionButtons.forEach(function (btn, i) {
+        var isAns = q.answer.indexOf(item.order[i]) >= 0;
+        var isSel = selected[i];
+        if (isAns !== isSel) ok = false;
+        if (isSel) yours.push(q.options[item.order[i]]);
+        if (isAns) correctLetters.push(LETTERS[i]);
+        btn.classList.remove("selected");
+        btn.classList.toggle("correct", isAns && isSel);
+        btn.classList.toggle("missed", isAns && !isSel);
+        btn.classList.toggle("wrong", isSel && !isAns);
+        btn.classList.toggle("dim", !isAns && !isSel);
+        btn.setAttribute("aria-disabled", "true");
+        btn.querySelector(".option-mark").textContent = isAns ? "✓" : isSel ? "✗" : "";
+      });
+      finish(ok, yours, [
+        h("strong", {}, ok ? "Correct." : "Not quite."),
+        ok ? null : " The correct answers are " + correctLetters.join(" and ") + ".",
+        h("p", { class: "explanation" }, q.explanation),
+      ]);
+    }
+
+    function submitYesNo() {
+      var right = 0;
+      var yours = [];
+      var items = [];
+      q.statements.forEach(function (st, i) {
+        var good = answers[i] === st.answer;
+        if (good) right++;
+        yours.push((good ? "✓ " : "✗ ") + (answers[i] ? "Yes" : "No") + ": " + st.text);
+        rows[i].classList.add(good ? "correct" : "wrong");
+        rows[i].querySelector(".option-mark").textContent = good ? "✓" : "✗";
+        yesButtons[i].disabled = true;
+        noButtons[i].disabled = true;
+        items.push(h("li", {}, h("strong", {}, LETTERS[i] + ": " + (st.answer ? "Yes" : "No") + ". "), st.why));
+      });
+      var ok = right === q.statements.length;
+      finish(ok, yours, [
+        h("strong", {}, ok ? "Correct." : "Not quite. " + right + " of " + q.statements.length + " statements correct."),
+        h("ul", { class: "why-list" }, items),
+        h("p", { class: "explanation" }, q.explanation),
+      ]);
+    }
+
+    function submit() {
+      if (item.done || !ready()) return;
+      if (kind === "multi") submitMulti();
+      else submitYesNo();
     }
 
     function next() {
-      if (item.picked === null) return;
+      if (!item.done) return;
       if (!isLast) {
         s.index++;
         renderQuiz();
@@ -412,12 +601,29 @@
 
     keyHandler = function (e) {
       var k = e.key.toLowerCase();
-      if (item.picked === null) {
+      if (!item.done) {
+        if (kind !== "single" && k === "enter" && ready()) {
+          e.preventDefault();
+          submit();
+          return;
+        }
+        if (kind === "yesno") {
+          if (k === "y" || k === "n") {
+            e.preventDefault();
+            var firstOpen = answers.indexOf(null);
+            if (firstOpen >= 0) setAnswer(firstOpen, k === "y");
+          } else if (k === "h" && hintBox) {
+            e.preventDefault();
+            toggleHint();
+          }
+          return;
+        }
         var pos = ["1", "2", "3", "4", "5", "6"].indexOf(k);
         if (pos < 0) pos = ["a", "b", "c", "d", "e", "f"].indexOf(k);
         if (pos >= 0 && pos < optionButtons.length) {
           e.preventDefault();
-          pick(pos);
+          if (kind === "multi") toggleOption(pos);
+          else pick(pos);
         } else if (k === "h" && hintBox) {
           e.preventDefault();
           toggleHint();
@@ -427,6 +633,13 @@
         next();
       }
     };
+
+    var shortcuts =
+      kind === "multi"
+        ? "Shortcuts: 1–" + optionButtons.length + " or A–" + LETTERS[optionButtons.length - 1] + " to tick an option · Enter to check · H for hint · Enter or → for next"
+        : kind === "yesno"
+        ? "Shortcuts: Y or N answers the next open statement · Enter to check · H for hint · Enter or → for next"
+        : "Shortcuts: 1–4 or A–D to answer · H for hint · Enter or → for next";
 
     var root = h(
       "div",
@@ -455,9 +668,9 @@
         },
         bar
       ),
-      h("div", { class: "card" }, heading, h("div", { class: "options" }, optionButtons), hintBox, feedback),
-      h("div", { class: "actions" }, hintBtn, h("span", { class: "spacer" }), nextBtn),
-      h("p", { class: "shortcuts" }, "Shortcuts: 1–4 or A–D to answer · H for hint · Enter or → for next")
+      h("div", { class: "card" }, heading, instruction, optionsBox, hintBox, feedback),
+      h("div", { class: "actions" }, hintBtn, h("span", { class: "spacer" }), countEl, checkBtn, nextBtn),
+      h("p", { class: "shortcuts" }, shortcuts)
     );
     mount(root);
     heading.focus({ preventScroll: true });
@@ -484,7 +697,7 @@
     keyHandler = null;
 
     var missed = s.items.filter(function (it) {
-      return it.order[it.picked] !== it.q.answer;
+      return !it.ok;
     });
 
     var message =
@@ -562,8 +775,8 @@
             "details",
             {},
             h("summary", {}, it.q.prompt),
-            h("p", {}, h("span", { class: "your" }, "Your answer: "), it.q.options[it.order[it.picked]]),
-            h("p", {}, h("span", { class: "right" }, "Correct answer: "), it.q.options[it.q.answer]),
+            answerBlock("Your answer: ", "your", it.yours),
+            answerBlock("Correct answer: ", "right", correctLines(it.q)),
             h("p", { class: "muted" }, it.q.explanation)
           )
         );
@@ -592,28 +805,56 @@
     var p = progressFor(s.ch.id);
     var isLast = s.index + 1 >= total;
 
+    var kind = kindOf(q);
+    var choiceItems = null;
+    if (kind === "yesno") choiceItems = q.statements.map(function (st) { return st.text; });
+    else if (store.settings.showChoicesOnCards) choiceItems = q.options;
+
     var front = h(
       "div",
       { class: "face face-front", "aria-hidden": String(s.flipped) },
       h("span", { class: "face-label" }, "Question"),
       p.known[q.id] ? h("span", { class: "known-badge" }, "Marked as known") : null,
       h("p", { class: "face-text" }, q.prompt),
-      store.settings.showChoicesOnCards
+      kind === "multi" ? h("p", { class: "face-instruction" }, "Choose " + numberWord(q.answer.length) + ".") : null,
+      kind === "yesno" ? h("p", { class: "face-instruction" }, "Yes or No for each statement.") : null,
+      choiceItems
         ? h(
             "ol",
             { class: "face-choices", type: "A" },
-            q.options.map(function (o) {
+            choiceItems.map(function (o) {
               return h("li", {}, o);
             })
           )
         : null,
       h("span", { class: "face-tip" }, "Click the card or press Space to flip")
     );
+
+    var backAnswer;
+    if (kind === "yesno") {
+      backAnswer = h(
+        "ul",
+        { class: "face-answer-list" },
+        q.statements.map(function (st, i) {
+          return h("li", {}, h("strong", {}, LETTERS[i] + ": " + (st.answer ? "Yes" : "No") + ". "), st.why);
+        })
+      );
+    } else if (kind === "multi") {
+      backAnswer = h(
+        "ul",
+        { class: "face-answer-list" },
+        correctLines(q).map(function (l) {
+          return h("li", {}, l);
+        })
+      );
+    } else {
+      backAnswer = h("p", { class: "face-text face-answer" }, q.options[q.answer]);
+    }
     var back = h(
       "div",
       { class: "face face-back", "aria-hidden": String(!s.flipped) },
       h("span", { class: "face-label" }, "Answer"),
-      h("p", { class: "face-text face-answer" }, q.options[q.answer]),
+      backAnswer,
       h("p", { class: "face-explanation" }, q.explanation)
     );
     var card = h(

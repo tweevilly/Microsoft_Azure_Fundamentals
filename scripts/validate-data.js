@@ -47,14 +47,41 @@ for (const file of files) {
     if (!setIds.has(q.set)) err(where, `unknown set "${q.set}"`);
     if (!q.prompt) err(where, "missing prompt");
     if (!q.explanation) err(where, "missing explanation");
-    if (!Array.isArray(q.options) || q.options.length !== 4) {
-      err(where, "options must be an array of exactly 4 strings");
+    const kind = q.type || "single";
+    if (!["single", "multi", "yesno"].includes(kind)) {
+      err(where, `unknown type "${q.type}"`);
+    } else if (kind === "yesno") {
+      if (!Array.isArray(q.statements) || q.statements.length < 2 || q.statements.length > 5) {
+        err(where, "yesno needs 2-5 statements");
+      } else {
+        q.statements.forEach((st, i) => {
+          if (!st.text || typeof st.text !== "string") err(where, `statement ${i + 1} missing text`);
+          if (typeof st.answer !== "boolean") err(where, `statement ${i + 1} answer must be true or false`);
+          if (!st.why) err(where, `statement ${i + 1} missing why`);
+        });
+      }
     } else {
-      if (new Set(q.options).size !== q.options.length) err(where, "duplicate options");
-      if (q.options.some((o) => typeof o !== "string" || !o.trim())) err(where, "empty option");
-    }
-    if (!Number.isInteger(q.answer) || q.answer < 0 || q.answer > 3) {
-      err(where, "answer must be an integer 0-3");
+      const max = kind === "multi" ? 6 : 4;
+      const min = kind === "multi" ? 4 : 4;
+      if (!Array.isArray(q.options) || q.options.length < min || q.options.length > max) {
+        err(where, `options must be an array of ${min === max ? max : `${min}-${max}`} strings`);
+      } else {
+        if (new Set(q.options).size !== q.options.length) err(where, "duplicate options");
+        if (q.options.some((o) => typeof o !== "string" || !o.trim())) err(where, "empty option");
+        if (kind === "single") {
+          if (!Number.isInteger(q.answer) || q.answer < 0 || q.answer > 3) {
+            err(where, "answer must be an integer 0-3");
+          }
+        } else if (
+          !Array.isArray(q.answer) ||
+          q.answer.length < 2 ||
+          q.answer.length >= q.options.length ||
+          new Set(q.answer).size !== q.answer.length ||
+          q.answer.some((a) => !Number.isInteger(a) || a < 0 || a >= q.options.length)
+        ) {
+          err(where, "multi answer must be an array of 2+ distinct valid indexes, fewer than the options");
+        }
+      }
     }
   }
 
